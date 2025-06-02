@@ -43,7 +43,8 @@ public class PlayerShooting : MonoBehaviour
             // Optional: Instantiate impact effect
             if (impactEffectPrefab != null)
             {
-                Instantiate(impactEffectPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+                GameObject impact =  Instantiate(impactEffectPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(impact, 2f);
             }
 
             Target target = hit.transform.GetComponent<Target>();
