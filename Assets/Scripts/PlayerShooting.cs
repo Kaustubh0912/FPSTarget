@@ -13,7 +13,6 @@ public class PlayerShooting : MonoBehaviour
     public ParticleSystem muzzleFlash;
     public ParticleSystem muzzleSmoke;
     public GameObject impactEffectPrefab;
-    //public LineRenderer laserSight; // Optional laser sight
 
     [Header("Ammo System")]
     public int maxAmmo = 30;
@@ -55,7 +54,6 @@ public class PlayerShooting : MonoBehaviour
 
     // Performance optimization - cache hit results
     private RaycastHit lastHit;
-    private bool hasValidHit = false;
 
     // Crosshair expansion for accuracy feedback
     [Header("Accuracy Feedback")]
@@ -76,7 +74,7 @@ public class PlayerShooting : MonoBehaviour
     {
         if (fpsCam == null)
         {
-            fpsCam = Camera.main ?? FindObjectOfType<Camera>();
+            fpsCam = Camera.main ?? FindFirstObjectByType<Camera>();
             if (fpsCam == null)
             {
                 Debug.LogError("No camera found for PlayerShooting!");
@@ -119,8 +117,6 @@ public class PlayerShooting : MonoBehaviour
     {
         HandleInput();
         HandleWeaponSway();
-        UpdateAccuracy();
-        //UpdateLaserSight();
     }
 
     void HandleInput()
@@ -147,39 +143,6 @@ public class PlayerShooting : MonoBehaviour
             StartCoroutine(Reload());
         }
     }
-
-    void UpdateAccuracy()
-    {
-        if (!showAccuracyFeedback) return;
-
-        // Check if player is moving
-        bool isMoving = Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0;
-
-        float targetAccuracy = isMoving ?
-            baseAccuracy - movementAccuracyPenalty :
-            baseAccuracy;
-
-        currentAccuracy = Mathf.Lerp(currentAccuracy, targetAccuracy, Time.deltaTime * 5f);
-    }
-
-    //void UpdateLaserSight()
-    //{
-    //    if (laserSight == null) return;
-
-    //    Vector3 startPoint = fpsCam.transform.position;
-    //    Vector3 direction = fpsCam.transform.forward;
-
-    //    if (Physics.Raycast(startPoint, direction, out RaycastHit hit, range, targetLayers))
-    //    {
-    //        laserSight.SetPosition(0, startPoint);
-    //        laserSight.SetPosition(1, hit.point);
-    //    }
-    //    else
-    //    {
-    //        laserSight.SetPosition(0, startPoint);
-    //        laserSight.SetPosition(1, startPoint + direction * range);
-    //    }
-    //}
 
     void HandleWeaponSway()
     {
@@ -224,12 +187,10 @@ public class PlayerShooting : MonoBehaviour
         // Perform raycast
         if (Physics.Raycast(fpsCam.transform.position, shootDirection, out lastHit, range, targetLayers))
         {
-            hasValidHit = true;
             ProcessHit(lastHit);
         }
         else
         {
-            hasValidHit = false;
             // Show miss feedback
             UIManager.Instance?.ShowHitFeedback("Miss", 0, false);
         }

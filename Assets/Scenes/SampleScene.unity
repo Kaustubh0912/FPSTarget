@@ -952,18 +952,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 035d91da86143554c8405f094e8d33cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lineRenderer: {fileID: 268421147}
-  laserOrigin: {fileID: 1002888572}
-  maxDistance: 100
-  hitLayers:
-    serializedVersion: 2
-    m_Bits: 8
-  isActive: 0
-  toggleKey: 108
-  laserDot: {fileID: 0}
-  laserSparkle: {fileID: 0}
-  audioSource: {fileID: 0}
-  laserToggleSound: {fileID: 0}
 --- !u!1 &271590014
 GameObject:
   m_ObjectHideFlags: 0
@@ -8076,7 +8064,7 @@ GameObject:
   - component: {fileID: 1999287210}
   - component: {fileID: 1999287209}
   m_Layer: 3
-  m_Name: Cube (1)
+  m_Name: obstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

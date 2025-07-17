@@ -73,14 +73,14 @@ public class UIManager : MonoBehaviour
             // If still not found, try finding by component
             if (playerShooting == null)
             {
-                playerShooting = FindObjectOfType<PlayerShooting>();
+                playerShooting = FindFirstObjectByType<PlayerShooting>();
             }
         }
 
         // Auto-find main canvas if not assigned
         if (mainCanvasRect == null)
         {
-            Canvas mainCanvas = FindObjectOfType<Canvas>();
+            Canvas mainCanvas = FindFirstObjectByType<Canvas>();
             if (mainCanvas != null)
             {
                 mainCanvasRect = mainCanvas.GetComponent<RectTransform>();
