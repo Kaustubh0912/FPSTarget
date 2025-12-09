@@ -23,13 +23,8 @@ public class BullseyeZone : MonoBehaviour
         parentTarget = GetComponentInParent<BullseyeTarget>();
     }
 
-    // This method will be called by the raycast shooting system
-    // Remove the OnTriggerEnter since we're using raycast
-
     public void Hit()
     {
-        Debug.Log($"{zoneName} hit for {points} points!");
-
         // Visual feedback
         if (rend != null)
         {

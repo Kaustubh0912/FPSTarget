@@ -18,18 +18,15 @@ public class BullseyeTarget : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
 
-        // Optional: Set up zone points if you want to do it from the parent
         SetupZonePoints();
     }
 
     void SetupZonePoints()
     {
-        // Find all child zones and set their points
         BullseyeZone[] zones = GetComponentsInChildren<BullseyeZone>();
 
         foreach (BullseyeZone zone in zones)
         {
-            // Set points based on zone name or you can do this manually in inspector
             switch (zone.name.ToLower())
             {
                 case "yellow":
@@ -61,15 +58,11 @@ public class BullseyeTarget : MonoBehaviour
         totalHits++;
         totalScore += zone.points;
 
-        Debug.Log($"Target hit! Zone: {zone.zoneName}, Points: {zone.points}, Total Score: {totalScore}");
-
-        // Play sound effect
         if (audioSource && hitSound)
         {
             audioSource.PlayOneShot(hitSound);
         }
 
-        // Spawn hit effect
         if (hitEffect)
         {
             Instantiate(hitEffect, zone.transform.position, Quaternion.identity);
@@ -87,7 +80,6 @@ public class BullseyeTarget : MonoBehaviour
     {
         totalHits = 0;
         totalScore = 0;
-        Debug.Log("Target reset!");
     }
 
     // Method to manually reset the target
