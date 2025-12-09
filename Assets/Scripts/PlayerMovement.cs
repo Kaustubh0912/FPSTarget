@@ -4,12 +4,20 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float moveSpeed = 5.0f;
-    public float jumpHeight = 2.0f;
-    public float gravity = -9.81f;
+    public float walkSpeed = 5f;
+    public float sprintSpeed = 9f;
+    public float crouchSpeed = 2.5f;
+    public float jumpHeight = 2f;
+    public float gravity = -10f;
+
+    [Header("Crouch Settings")]
+    public float crouchHeight = 1f;
+    public float standingHeight = 2f;
+    public float crouchTransitionSpeed = 8f;
+    public bool crouchToggle = true;
 
     [Header("Mouse Look")]
-    public float mouseSensitivity = 100.0f;
+    public float mouseSensitivity = 100f;
     public Transform playerCamera;
 
     private CharacterController controller;
@@ -17,14 +25,14 @@ public class PlayerMovement : MonoBehaviour
     private float xRotation = 0f;
     private bool isGrounded;
 
+    private float targetSpeed;
+    private bool isCrouching = false;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
-
         if (playerCamera == null)
-        {
             playerCamera = Camera.main.transform;
-        }
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -33,18 +41,18 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         HandleGroundCheck();
+        HandleCrouch();
         HandleMovement();
         HandleMouseLook();
         ApplyGravity();
+        SmoothCrouchHeight();
     }
 
     void HandleGroundCheck()
     {
         isGrounded = controller.isGrounded;
         if (isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f; 
-        }
+            velocity.y = -2f;
     }
 
     void HandleMovement()
@@ -52,13 +60,44 @@ public class PlayerMovement : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        Vector3 move = transform.right * x + transform.forward * z;
-        controller.Move(move * moveSpeed * Time.deltaTime);
+        if (isCrouching)
+            targetSpeed = crouchSpeed;
+        else if (Input.GetKey(KeyCode.LeftShift))
+            targetSpeed = sprintSpeed;
+        else
+            targetSpeed = walkSpeed;
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        Vector3 move = transform.right * x + transform.forward * z;
+        controller.Move(move * targetSpeed * Time.deltaTime);
+
+        if (Input.GetButtonDown("Jump") && isGrounded && !isCrouching)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
+    }
+
+    void HandleCrouch()
+    {
+        if (crouchToggle)
+        {
+            if (Input.GetKeyDown(KeyCode.C))
+                isCrouching = !isCrouching;
+        }
+        else
+        {
+            isCrouching = Input.GetKey(KeyCode.C);
+        }
+    }
+
+    void SmoothCrouchHeight()
+    {
+        float targetHeight = isCrouching ? crouchHeight : standingHeight;
+
+        controller.height = Mathf.Lerp(controller.height, targetHeight, Time.deltaTime * crouchTransitionSpeed);
+
+        Vector3 camPos = playerCamera.localPosition;
+        camPos.y = Mathf.Lerp(camPos.y, targetHeight - 0.2f, Time.deltaTime * crouchTransitionSpeed);
+        playerCamera.localPosition = camPos;
     }
 
     void HandleMouseLook()
@@ -80,7 +119,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public bool IsGrounded() => isGrounded;
-    public float GetCurrentSpeed() => moveSpeed;
+    public float GetCurrentSpeed() => targetSpeed;
     public Vector3 GetMovementVelocity() => controller.velocity;
-    
+    public bool IsCrouching() => isCrouching;
 }
